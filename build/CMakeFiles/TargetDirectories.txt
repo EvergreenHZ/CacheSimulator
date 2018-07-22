@@ -1,3 +1,0 @@
-/home/huaizhi/CacheSim/build/CMakeFiles/rebuild_cache.dir
-/home/huaizhi/CacheSim/build/CMakeFiles/csim.dir
-/home/huaizhi/CacheSim/build/CMakeFiles/edit_cache.dir

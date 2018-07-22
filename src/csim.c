@@ -57,15 +57,16 @@ void initCache(struct Cache* cache, int s, unsigned long long E, int b)
 unsigned long long getSelector(unsigned long long address, int s, int b, int m)
 {
         /* eg. m = 64, s = 0, b = 6, t = 58 */
-        unsigned long long t = m - s - b;
-        address <<= t;
-        address >>= (t + b);
-        return address;
+        unsigned long long mask = 0x7fffffffffffffff >> ((m - 1) - s);
+        address = address >> b;
+        return (address & mask);
 }
 
 unsigned long long getTag(unsigned long long address, int s, int b, int m)
 {
-        return address >>= (b + s);
+        unsigned long long mask = 0x7fffffffffffffff >> ((m - 1) - s - b);
+        address = address >> (s + b);
+        return (mask & address);
 }
 
 bool getValid(struct Cache* cache, unsigned long long address, int s, int b, int m)

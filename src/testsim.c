@@ -11,8 +11,6 @@ int main(int argc, char *argv[])
 
         FILE *fp;
         char line_buf[32];
-        size_t len = 32;
-        ssize_t read;
 
         parseArgs(argc, argv, &s, &E, &b, tracefile, &vflag);
 
@@ -67,6 +65,8 @@ int main(int argc, char *argv[])
                                 miss++;
                                 capacity_miss++;
                                 eviction++;
+                                break;
+                        default:
                                 break;
                 }
 

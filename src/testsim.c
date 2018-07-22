@@ -1,11 +1,11 @@
 #include "common.h"
 
-unsigned long g_program_counter = 0;
+unsigned long long g_program_counter = 0;
 
 int main(int argc, char *argv[])
 {
         int s = -1, b = -1;
-        unsigned long E = -1;
+        unsigned long long E = -1;
         char tracefile[32];
         bool vflag;
 
@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
 
         struct Cache cache;
         initCache(&cache, s, E, b);
+        //cacheInfo(&cache);
 
         // parse trace file
         fp = fopen(tracefile, "r");
@@ -34,14 +35,17 @@ int main(int argc, char *argv[])
 
         while (fgets(line_buf, 32, fp) != NULL) {
 
+                g_program_counter ++;
+                LOG("clock: %llu, ins: %s\n", g_program_counter, line_buf);
                 //Log(line_buf);
                 /* counter */
-                g_program_counter ++;
                 // here, get operation(L, M, S) and address;
                 char operation;
-                unsigned long address;
+                unsigned long long address;
                 int size;
+                //Log(line_buf);
                 parseLine(line_buf, &operation, &address, &size);
+                printf("address is: %llu\n", address);
 
                 enum Status status;
                 status = accessCache(&cache, operation, address);

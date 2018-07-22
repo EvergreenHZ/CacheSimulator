@@ -16,7 +16,7 @@ void usage()
         • -t <tracefile>: Name of the valgrind trace to replay\n");
 }
         
-void parseArgs(int argc, char* argv[], int *s, unsigned long *E, \
+void parseArgs(int argc, char* argv[], int *s, unsigned long long *E, \
         int *b, char tracefile[], bool *vflag)
 {
         int opt;
@@ -45,9 +45,9 @@ void parseArgs(int argc, char* argv[], int *s, unsigned long *E, \
         }
 }
 
-unsigned long power(unsigned long base, unsigned long exp)
+unsigned long long power(unsigned long long base, unsigned long long exp)
 {
-        int accum = 1;
+        unsigned long long accum = 1;
         for (int i = 0; i < exp; i++) {
                 accum *= base;
         }
@@ -55,11 +55,12 @@ unsigned long power(unsigned long base, unsigned long exp)
         return accum;
 }
 
-void hexToDec(char* buf, int len, unsigned long* address)
+void hexToDec(char* buf, int len, unsigned long long* address)
 {
         //Log(buf);
-        unsigned long s = 0;
-        for (int i = len - 1; i > 0; i--) {
+        unsigned long long s = 0;
+        unsigned long long exp = 0;
+        for (int i = len - 1; i >= 0; i--) {
                 //printf("i is: %d\n", i);
                 int x;
                 switch (buf[i]) {
@@ -93,13 +94,13 @@ void hexToDec(char* buf, int len, unsigned long* address)
                 }
 
                 //printf("hextodec i is: %d\n", i);
-                s += x * power(16, i);
+                s += x * power(16, exp++);
         }
         //printf("hextodec s is: %ld\n", s);
         *address = s;
 }
 
-void parseLine(char *line_buf, char* op, unsigned long* address, int* size)
+void parseLine(char *line_buf, char* op, unsigned long long* address, int* size)
 {
         char *p = line_buf;
         if (*p == ' ') {
@@ -112,8 +113,11 @@ void parseLine(char *line_buf, char* op, unsigned long* address, int* size)
         for (; *++p != ','; i++) {
                 buf[i] = *p;
         }
+        //printf("i is: %d\n", i);
         buf[i] = '\0';
+        //Log(buf);
         hexToDec(buf, i, address);
+        //printf("ParseLine address is: %ld\n", *address);
 
         // ignore size
 }

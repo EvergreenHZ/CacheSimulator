@@ -24,14 +24,14 @@ void* Malloc(size_t num_of_space)
  * S = 1    : full associative
  * otherwise: set associative
  */
-void initCache(struct Cache* cache, int s, unsigned long E, int b)
+void initCache(struct Cache* cache, int s, unsigned long long E, int b)
 {
         cache->s = s;
         cache->E = E;
         cache->b = b;
         cache->m = 64;
         cache->full = false;
-        unsigned long S = 1;
+        unsigned long long S = 1;
         for (int i = 0; i < s; i++) {
                 S *= 2;
         }
@@ -54,23 +54,24 @@ void initCache(struct Cache* cache, int s, unsigned long E, int b)
         }
 }
 
-unsigned long getSelector(unsigned long address, int s, int b, int m)
+unsigned long long getSelector(unsigned long long address, int s, int b, int m)
 {
-        int t = m - s - b;
+        /* eg. m = 64, s = 0, b = 6, t = 58 */
+        unsigned long long t = m - s - b;
         address <<= t;
         address >>= (t + b);
         return address;
 }
 
-unsigned long getTag(unsigned long address, int s, int b, int m)
+unsigned long long getTag(unsigned long long address, int s, int b, int m)
 {
         return address >>= (b + s);
 }
 
-bool getValid(struct Cache* cache, unsigned long address, int s, int b, int m)
+bool getValid(struct Cache* cache, unsigned long long address, int s, int b, int m)
 {
-        unsigned long group = getSelector(address, s, b, m);
-        unsigned long tag = getTag(address, s, b, m);
+        unsigned long long group = getSelector(address, s, b, m);
+        unsigned long long tag = getTag(address, s, b, m);
         struct Line* selected_set = cache->sets[group].lines;
         for (int i = 0; i < cache->E; i++) {
                 if (tag == selected_set[i].tag) {
@@ -80,7 +81,7 @@ bool getValid(struct Cache* cache, unsigned long address, int s, int b, int m)
         return false;
 }
 
-bool checkTag(struct Cache* cache, unsigned long group, unsigned long tag)
+bool checkTag(struct Cache* cache, unsigned long long group, unsigned long long tag)
 {
         struct Line* selected_set = cache->sets[group].lines;
         for (int i = 0; i < cache->E; i++) {
@@ -100,7 +101,7 @@ bool checkTag(struct Cache* cache, unsigned long group, unsigned long tag)
  *      ii). else valid equals to false, which means there is still an empty cache line
  *              and we can use this information to choose the right replacing strategy.
  */
-void checkTagAndValid(struct Cache* cache, unsigned long group, unsigned long tag, \
+void checkTagAndValid(struct Cache* cache, unsigned long long group, unsigned long long tag, \
                 bool* tag_existence, bool* valid)
 {
         struct Line* selected_set = cache->sets[group].lines;
@@ -138,7 +139,7 @@ bool isCacheFull(struct Cache* cache)
         }
 }
 
-void evictCacheLine(struct Cache* cache, unsigned long group, unsigned long linum, unsigned long address)
+void evictCacheLine(struct Cache* cache, unsigned long long group, unsigned long long linum, unsigned long long address)
 {
         struct Line* specific_line = &(cache->sets[group].lines[linum]);
         specific_line->valid = true;
@@ -149,12 +150,34 @@ void evictCacheLine(struct Cache* cache, unsigned long group, unsigned long linu
         specific_line->access_count = 1;
 }
 
-void loadDataToSpecificCacheLine(struct Cache* cache, unsigned long group, unsigned long linum, unsigned long address)
+void loadDataToSpecificCacheLine(struct Cache* cache, unsigned long long group, unsigned long long linum, unsigned long long address)
 {
         evictCacheLine(cache, group, linum, address);
 }
 
-enum Status accessCache(struct Cache* cache, char op, unsigned long address)
+enum Status accessCache(struct Cache* cache, char op, unsigned long long address)
 {
-        return directMappingAccess(cache, op, address);
+        //return directMappingAccess(cache, op, address);
+        return fullAssociativeAccess(cache, op, address);
+}
+
+unsigned long long findEmptyCacheLine(struct Cache* cache, unsigned long long group, bool *found)
+{
+        *found = false;
+        struct Line* selected_set = cache->sets[group].lines;
+        for (int i = 0; i < cache->E; i++) {
+                if (selected_set[i].valid == false) {  // empty line exits
+                        *found = true;
+                        return i;
+                }
+        }
+        return 0;
+}
+
+void cacheInfo(struct Cache* cache)
+{
+       LOG("Cache Info:\n");
+       LOG("S: %llu\n", cache->S);
+       LOG("E: %llu\n", cache->E);
+       LOG("b: %d\n", cache->b);
 }

@@ -12,10 +12,10 @@
  * E = 1
  */
 
-enum Status directMappingAccess(struct Cache* cache, char op, unsigned long address)
+enum Status directMappingAccess(struct Cache* cache, char op, unsigned long long address)
 {
-        unsigned long group = getSelector(address, cache->s, cache->b, cache->m);
-        unsigned long tag   = getTag(address, cache->s, cache->b, cache->m);
+        unsigned long long group = getSelector(address, cache->s, cache->b, cache->m);
+        unsigned long long tag   = getTag(address, cache->s, cache->b, cache->m);
 
         bool tag_existence, valid;
         checkTagAndValid(cache, group, tag, &tag_existence, &valid);

@@ -1,0 +1,55 @@
+ARCHITECTURE	csim.h	5
+CAPACITY_MISS	csim.h	23
+COLD_MISS	csim.h	21
+COMMON_H	common.h	2
+CONFLICT_MISS	csim.h	22
+CSIM	csim.h	2
+Cache	csim.h	39
+DIRECT_MAPPING_REPLACEMENT	csim.h	10
+E	csim.h	42
+Error	csim.c	/^void Error(char *msg)$/
+HIT	csim.h	17
+LFU	csim.h	13
+LRU	csim.h	12
+Line	csim.h	26
+Log	utils.c	/^void Log(char* msg)$/
+MISS	csim.h	18
+Malloc	csim.c	/^void* Malloc(size_t num_of_space)$/
+Mtestsim	testsim.c	/^int main(int argc, char *argv[])$/
+Policy	csim.h	9
+RANDOM_REPLACEMENT	csim.h	11
+READ_HIT	csim.h	19
+S	csim.h	41
+Set	csim.h	35
+Status	csim.h	16
+WRITE_HIT	csim.h	20
+accessCache	csim.c	/^enum Status accessCache(struct Cache* cache, char /
+access_count	csim.h	31
+access_time	csim.h	32
+address	csim.h	29
+b	csim.h	43
+checkTag	csim.c	/^bool checkTag(struct Cache* cache, unsigned long g/
+checkTagAndValid	csim.c	/^void checkTagAndValid(struct Cache* cache, unsigne/
+directMappingAccess	directmapping.c	/^enum Status directMappingAccess(struct Cache* cach/
+evictCacheLine	csim.c	/^void evictCacheLine(struct Cache* cache, unsigned /
+findEmptyCacheLine	csim.c	/^unsigned long findEmptyCacheLine(struct Cache* cac/
+full	csim.h	45
+fullAssociativeAccess	fullassociative.c	/^enum Status fullAssociativeAccess(struct Cache* ca/
+g_program_counter	testsim.c	3
+getSelector	csim.c	/^unsigned long getSelector(unsigned long address, i/
+getTag	csim.c	/^unsigned long getTag(unsigned long address, int s,/
+getValid	csim.c	/^bool getValid(struct Cache* cache, unsigned long a/
+hexToDec	utils.c	/^void hexToDec(char* buf, int len, unsigned long* a/
+initCache	csim.c	/^void initCache(struct Cache* cache, int s, unsigne/
+isCacheFull	csim.c	/^bool isCacheFull(struct Cache* cache)$/
+lines	csim.h	36
+loadDataToSpecificCacheLine	csim.c	/^void loadDataToSpecificCacheLine(struct Cache* cac/
+m	csim.h	44
+parseArgs	utils.c	/^void parseArgs(int argc, char* argv[], int *s, uns/
+parseLine	utils.c	/^void parseLine(char *line_buf, char* op, unsigned /
+power	utils.c	/^unsigned long power(unsigned long base, unsigned l/
+s	csim.h	40
+sets	csim.h	46
+tag	csim.h	30
+usage	utils.c	/^void usage()$/
+valid	csim.h	27

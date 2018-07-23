@@ -26,6 +26,12 @@ void* Malloc(size_t num_of_space)
  */
 void initCache(struct Cache* cache, int s, unsigned long long E, int b)
 {
+        if (s > 63) {
+                Error("Parameter s is illegal");
+        }
+        if (b < 1) {
+                Error("Block size is illegal");
+        }
         cache->s = s;
         cache->E = E;
         cache->b = b;
@@ -69,29 +75,6 @@ unsigned long long getTag(unsigned long long address, int s, int b, int m)
         return (mask & address);
 }
 
-bool getValid(struct Cache* cache, unsigned long long address, int s, int b, int m)
-{
-        unsigned long long group = getSelector(address, s, b, m);
-        unsigned long long tag = getTag(address, s, b, m);
-        struct Line* selected_set = cache->sets[group].lines;
-        for (int i = 0; i < cache->E; i++) {
-                if (tag == selected_set[i].tag) {
-                        return selected_set[i].valid;
-                }
-        }
-        return false;
-}
-
-bool checkTag(struct Cache* cache, unsigned long long group, unsigned long long tag)
-{
-        struct Line* selected_set = cache->sets[group].lines;
-        for (int i = 0; i < cache->E; i++) {
-                if (tag == selected_set[i].tag) {
-                        return true;
-                }
-        }
-        return false;
-}
 
 /*
  * This function is subtle.
@@ -102,7 +85,7 @@ bool checkTag(struct Cache* cache, unsigned long long group, unsigned long long 
  *      ii). else valid equals to false, which means there is still an empty cache line
  *              and we can use this information to choose the right replacing strategy.
  */
-void checkTagAndValid(struct Cache* cache, unsigned long long group, unsigned long long tag, \
+unsigned long long checkTagAndValid(struct Cache* cache, unsigned long long group, unsigned long long tag, \
                 bool* tag_existence, bool* valid)
 {
         struct Line* selected_set = cache->sets[group].lines;
@@ -159,7 +142,8 @@ void loadDataToSpecificCacheLine(struct Cache* cache, unsigned long long group, 
 enum Status accessCache(struct Cache* cache, char op, unsigned long long address)
 {
         //return directMappingAccess(cache, op, address);
-        return fullAssociativeAccess(cache, op, address);
+        //return fullAssociativeAccess(cache, op, address);
+        return setAssociativeAccess(cache, op, address, LRU);
 }
 
 unsigned long long findEmptyCacheLine(struct Cache* cache, unsigned long long group, bool *found)
@@ -181,4 +165,51 @@ void cacheInfo(struct Cache* cache)
        LOG("S: %llu\n", cache->S);
        LOG("E: %llu\n", cache->E);
        LOG("b: %d\n", cache->b);
+}
+
+void updateTimeStamp(struct Cache* cache, unsigned long long group, unsigned long long linum)
+{
+        struct Line* specific_line = &(cache->sets[group].lines[linum]);
+        specific_line->access_time = g_program_counter;
+}
+
+void increaseAccessCount(struct Cache *cache, unsigned long long group, \
+                unsigned long long linum)
+{
+        struct Line* specific_line = &(cache->sets[group].lines[linum]);
+        specific_line->access_count++;
+}
+
+unsigned long long findVictimCacheLine(struct Cache *cache, unsigned long long group,\
+                enum Policy policy)
+{
+        struct Line* selected_set = cache->sets[group].lines;
+
+        unsigned long long i = 1;
+        unsigned long long time_stamp = selected_set[0].access_time;
+        unsigned long long access_count = selected_set[0].access_count;
+        switch (policy) {
+                case LRU:
+                        for (; i < cache->E; i++) {
+                                if (time_stamp > selected_set[i].access_time) {
+                                        time_stamp = selected_set[i].access_time;
+                                        break;
+                                }
+                        }
+                        return i;
+                case LFU:
+                        for (; i < cache->E; i++) {
+                                if (access_count > selected_set[i].access_count) {
+                                        access_count = selected_set[i].access_count;
+                                        break;
+                                }
+                        }
+                        return i;
+                case DIRECT_MAPPING_REPLACEMENT:
+                        return 0;
+                case RANDOM_REPLACEMENT:
+                        srand(time(NULL));
+                        unsigned long long random_line = rand() % cache->E;
+                        return random_line;
+        }
 }

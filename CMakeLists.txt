@@ -10,6 +10,7 @@ include_directories(./include/)
 set(SRC ./src/csim.c
         ./src/directmapping.c
         ./src/fullassociative.c
+        ./src/setassociative.c
         ./src/utils.c
         ./src/testsim.c)
 

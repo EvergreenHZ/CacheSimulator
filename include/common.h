@@ -9,6 +9,7 @@
 #include <getopt.h>
 #include <math.h>
 #include <stdint.h>
+#include <time.h>
 #include "csim.h"
 
 #define LOG(...) \

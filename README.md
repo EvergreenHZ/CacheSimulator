@@ -10,40 +10,40 @@ Read opeation(R, W) and address from trace file and pass them to accessCache(...
 First, find the corresponding set.
 
 ## DIRECT MAPPING
-check tag_existence and valid
-if tag_existence:
-        if valid:
-                HIT
-        if not valid:
-                COLD_MISS
-                load data from memory to cache
-if not tag_existence:
-        if valid:  # pay attention, now valid means current cache line is used
-                check the whole cache is full of not
-                if full:
-                        CAPACITY_MISS
-                if not full:
-                        CONFLICT_MISS
-                evict current cache line and load the new data
-        if not valid:  # COLD_MISS
-                COLD_MISS
-                load data from memory to cache
+        check tag_existence and valid
+        if tag_existence:
+                if valid:
+                        HIT
+                if not valid:
+                        COLD_MISS
+                        load data from memory to cache
+        if not tag_existence:
+                if valid:  # pay attention, now valid means current cache line is used
+                        check the whole cache is full of not
+                        if full:
+                                CAPACITY_MISS
+                        if not full:
+                                CONFLICT_MISS
+                        evict current cache line and load the new data
+                if not valid:  # COLD_MISS
+                        COLD_MISS
+                        load data from memory to cache
 
 ## FULLY ASSOCIATIVE
-check tag_existence and valid
-if tag_existence:
-        if valid:
-                HIT
-        if not valid:
-                COLD_MISS
-                find an empty line and load data
-if not tag_existence:
-        if valid:  # the whole cache is full
-                CAPACITY_MISS
-                find a random cache line and load data(random replacement policy)
-        if not valid:  # the whole cache is not full
-                COLD_MISS
-                find an empty cache line and load the data
+        check tag_existence and valid
+        if tag_existence:
+                if valid:
+                        HIT
+                if not valid:
+                        COLD_MISS
+                        find an empty line and load data
+        if not tag_existence:
+                if valid:  # the whole cache is full
+                        CAPACITY_MISS
+                        find a random cache line and load data(random replacement policy)
+                if not valid:  # the whole cache is not full
+                        COLD_MISS
+                        find an empty cache line and load the data
 
 ## SET ASSOCIATIVE
 check tag_existence and valid

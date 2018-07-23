@@ -26,7 +26,7 @@ enum Status fullAssociativeAccess(struct Cache* cache, char op, unsigned long lo
                                 // you can set dirty, but no need
                                 return WRITE_HIT;
                         }
-                } else {  // not valid, miss, and must have an empty line
+                } else {  // not valid, cold miss, and must have an empty line
                         unsigned long long empty_linum;
                         bool found;
                         empty_linum = findEmptyCacheLine(cache, group, &found);

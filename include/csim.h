@@ -46,45 +46,50 @@ struct Cache {
         struct Set* sets;
 };
 
-void initCache(struct Cache* cache, int s, unsigned long long E, int b);
-
-void cacheInfo(struct Cache* cache);
-
 /* Parser */
 void parseArgs(int argc, char* argv[], int *s, unsigned long long *E, \
                 int *b, char tracefile[], bool *vlag);
 
 void parseLine(char*, char*, unsigned long long*, int*);
 
+/* Cache initialization and cache information */
+void initCache(struct Cache* cache, int s, unsigned long long E, int b);
+
+void cacheInfo(struct Cache* cache);
+
+bool isCacheFull(struct Cache* cache);
+
 /* Hleper Function */
 unsigned long long getSelector(unsigned long long address, int s, int b, int m);
 
 unsigned long long getTag(unsigned long long address, int s, int b, int m);
 
-bool getValid(struct Cache* cache, unsigned long long address, int s, int, int);
-
-bool checkTag(struct Cache* cache, unsigned long long group, unsigned long long tag);
-
-void checkTagAndValid(struct Cache* cache, unsigned long long group, unsigned long long tag, 
+unsigned long long checkTagAndValid(struct Cache* cache, unsigned long long group, unsigned long long tag, 
                 bool* tag_existence, bool* valid);
-
-
-void evictCacheLine(struct Cache* cache, unsigned long long group, unsigned long long linenum, unsigned long long address);
-
-void loadDataToSpecificCacheLine(struct Cache* cache, unsigned long long group, \
-                unsigned long long linenum, unsigned long long address);
-
-bool isCacheFull(struct Cache* cache);
 
 unsigned long long findEmptyCacheLine(struct Cache* cache, unsigned long long group, bool *found);
 
-// void eviction(struct Cache* cache, unsigned long long group, unsigned long long address, enum Policy);
+void updateTimeStamp(struct Cache* cache, unsigned long long group, unsigned long long linum);
+
+void increaseAccessCount(struct Cache *cache, unsigned long long group, unsigned long long linum);
+
+unsigned long long findVictimCacheLine(struct Cache* cache, unsigned long long group, enum Policy policy);
+
+/* load or evict */
+void evictCacheLine(struct Cache* cache, unsigned long long group, unsigned long long linenum, \
+                unsigned long long address);
+
+void loadDataToSpecificCacheLine(struct Cache* cache, unsigned long long group, \
+                unsigned long long linenum, unsigned long long address);
 
 
 /* Access Cache */
 enum Status directMappingAccess(struct Cache* cache, char op, unsigned long long address);
 
 enum Status fullAssociativeAccess(struct Cache* cache, char op, unsigned long long address);
+
+enum Status setAssociativeAccess(struct Cache* cache, char op, unsigned long long address, \
+                enum Policy policy);
 
 enum Status accessCache(struct Cache*, char, unsigned long long);
 
